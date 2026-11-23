@@ -20,10 +20,13 @@ jobs:
         run: |
           mkdir build
           javac -cp lib/postgresql.jar -d build Main.java game/*.java ui/*.java
+          cd build
+          jar xf ../lib/postgresql.jar
+          cd ..
           jar cfe game.jar Main -C build .
           mkdir dist_input
           cp game.jar dist_input/
-          jpackage --type app-image --name "DungeonBattle" --input dist_input --main-jar game.jar --main-class Main
+          jpackage --type app-image --name "DungeonBattle" --input dist_input --main-jar game.jar --main-class Main --icon assets/icon.ico
           Compress-Archive -Path DungeonBattle -DestinationPath DungeonBattle-Windows.zip
       - name: Upload ke Halaman Releases
         uses: softprops/action-gh-release@v2
