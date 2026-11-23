@@ -1,0 +1,33 @@
+name: Build Windows EXE
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Compile dan Bikin EXE
+        run: |
+          mkdir build
+          javac -cp lib/postgresql.jar -d build Main.java game/*.java ui/*.java
+          jar cfe game.jar Main -C build .
+          mkdir dist_input
+          cp game.jar dist_input/
+          jpackage --type app-image --name "DungeonBattle" --input dist_input --main-jar game.jar --main-class Main
+          Compress-Archive -Path DungeonBattle -DestinationPath DungeonBattle-Windows.zip
+      - name: Upload ke Halaman Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            game.jar
+            DungeonBattle-Windows.zip
