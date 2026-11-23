@@ -1,5 +1,9 @@
 bin/
-out/
-*.class
-game.jar
 build/
+out/
+dist_input/
+DungeonBattle/
+*.class
+*.jar
+!lib/postgresql.jar
+savegame.properties
