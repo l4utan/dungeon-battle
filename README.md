@@ -1,8 +1,8 @@
- Dungeon Battle
+# Dungeon Battle
 
 Game battle turn-based. Ksatria Tudung melawan Tengkorak Hidup.
 
-[Preview gameplay](assets/preview.gif)
+![Preview gameplay](assets/preview.gif)
 
 ## Cara main
 
