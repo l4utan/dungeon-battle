@@ -22,7 +22,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path build | Out-Null
 
           $sources = Get-ChildItem -Recurse -Filter *.java | ForEach-Object { $_.FullName }
-          javac --release 17 -cp lib/postgresql.jar -d build $sources
+          javac -encoding UTF-8 --release 17 -cp lib/postgresql.jar -d build $sources
           if ($LASTEXITCODE -ne 0) { throw "javac gagal!" }
 
           Push-Location build
