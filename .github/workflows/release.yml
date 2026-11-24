@@ -18,15 +18,31 @@ jobs:
           java-version: '17'
       - name: Compile dan Bikin EXE
         run: |
-          mkdir build
-          javac -cp lib/postgresql.jar -d build Main.java game/*.java ui/*.java
-          cd build
+          $ErrorActionPreference = "Stop"
+          New-Item -ItemType Directory -Force -Path build | Out-Null
+
+          $sources = Get-ChildItem -Recurse -Filter *.java | ForEach-Object { $_.FullName }
+          javac --release 17 -cp lib/postgresql.jar -d build $sources
+          if ($LASTEXITCODE -ne 0) { throw "javac gagal!" }
+
+          Push-Location build
           jar xf ../lib/postgresql.jar
-          cd ..
+          if ($LASTEXITCODE -ne 0) { throw "Ekstrak postgresql.jar gagal!" }
+          Pop-Location
+
           jar cfe game.jar Main -C build .
-          mkdir dist_input
-          cp game.jar dist_input/
+          if ($LASTEXITCODE -ne 0) { throw "Pembuatan game.jar gagal!" }
+
+          $jarContents = jar tf game.jar
+          if (-not ($jarContents -match "^Main\.class$")) {
+            throw "Main.class tidak ditemukan di dalam game.jar!"
+          }
+
+          New-Item -ItemType Directory -Force -Path dist_input | Out-Null
+          Copy-Item game.jar dist_input/
           jpackage --type app-image --name "DungeonBattle" --input dist_input --main-jar game.jar --main-class Main --icon assets/icon.ico
+          if ($LASTEXITCODE -ne 0) { throw "jpackage gagal!" }
+
           Compress-Archive -Path DungeonBattle -DestinationPath DungeonBattle-Windows.zip
       - name: Upload ke Halaman Releases
         uses: softprops/action-gh-release@v2
